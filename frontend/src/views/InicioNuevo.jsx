@@ -44,7 +44,7 @@ export default function InicioNuevo() {
                 {store.loading ? (
                     <p className="text-center">Cargando...</p>
                 ) : (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-0 md:gap-6">
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-0 gap-y-2 md:gap-6">
                         {(store.products || []).slice(0, 12).map(product => (
                             <ProductCardPerfumes key={product.id} product={product} />
                         ))}
