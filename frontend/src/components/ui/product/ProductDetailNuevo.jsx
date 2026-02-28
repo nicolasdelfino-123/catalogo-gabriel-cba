@@ -252,12 +252,25 @@ export default function ProductDetailNuevo() {
                     {/* INFO */}
                     <div>
                         <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
+                        {product.brand && (
+                            <p className="text-lg text-purple-600 mb-4">Marca: {product.brand}</p>
+                        )}
+
 
                         <div className="text-4xl font-bold text-purple-600 mb-4">
+
                             ${Number(
                                 isWholesale ? product.price_wholesale : product.price
                             ).toLocaleString("es-AR")}
                         </div>
+                        <div className="mb-6">
+                            <p className="text-sm text-gray-500">Categoría: {product.category_name}</p>
+                        </div>
+                        {product.description && (
+                            <p className="text-gray-700 mb-4 leading-relaxed">
+                                {product.description}
+                            </p>
+                        )}
 
                         {/* selector sabores */}
                         {flavors.length > 0 && (
@@ -317,30 +330,57 @@ export default function ProductDetailNuevo() {
                             </button>
                         </div>
 
-                        {/* contenido tabs */}
-                        {activeTab === "desc" ? (
-                            <div className="mt-4">
-                                <p className="whitespace-pre-line text-gray-700">
-                                    {product.short_description || product.description}
-                                </p>
-
-                                {product.description && (
-                                    <button
-                                        onClick={() => setDescExpanded(!descExpanded)}
-                                        className="text-purple-600 text-sm mt-2"
+                        {activeTab === 'desc' ? (
+                            <div className="pt-4">
+                                <div className="relative">
+                                    <p
+                                        className={`text-gray-700 whitespace-pre-line`}
+                                        style={
+                                            descExpanded
+                                                ? { maxHeight: 'none', overflow: 'visible', display: 'block' }
+                                                : { maxHeight: '12em', overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 8, WebkitBoxOrient: 'vertical' }
+                                        }
                                     >
-                                        {descExpanded ? "Ver menos" : "Ver más"}
-                                    </button>
-                                )}
+                                        {product.short_description || 'Sin descripción.'}
+                                    </p>
+                                    {(product.short_description?.length ?? 0) > 0 && (
+                                        <button
+                                            type="button"
+                                            onClick={() => setDescExpanded((v) => !v)}
+                                            className="mt-2 text-purple-600 hover:text-purple-800 text-sm flex items-center gap-1"
+                                        >
+                                            {descExpanded ? (
+                                                <>
+                                                    Ver menos
+                                                    <svg className="w-4 h-4 rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </>
+                                            ) : (
+                                                <>
+                                                    Ver más
+                                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                    </svg>
+                                                </>
+                                            )}
+                                        </button>
+                                    )}
+                                </div>
                             </div>
                         ) : (
-                            <div className="mt-4 text-gray-700">
-                                {flavors.length > 0 ? (
-                                    <ul className="list-disc pl-5 space-y-1">
-                                        {flavors.map(f => <li key={f}>{f}</li>)}
-                                    </ul>
+                            <div className="pt-4 space-y-3">
+                                {getFlavors(product).length > 0 ? (
+                                    <div>
+                                        <h4 className="font-medium mb-2">Sabores disponibles</h4>
+                                        <ul className="list-disc pl-5 space-y-1 text-gray-700">
+                                            {getFlavors(product).map((f) => (
+                                                <li key={f}>{f}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
                                 ) : (
-                                    <p>Sin información adicional.</p>
+                                    <p className="text-gray-500">Sin sabores especificados.</p>
                                 )}
                             </div>
                         )}
