@@ -129,6 +129,11 @@ const parsePrice = (value) => {
     return Number.isFinite(n) ? n : null;
 };
 
+const parseStock = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
+};
+
 /* =========================
    COMPONENT
 ========================= */
@@ -170,12 +175,14 @@ export default function ProductDetailNuevo() {
         const baseMl = parseMl(product?.volume_ml);
         const basePrice = parsePrice(product?.price);
         const baseWholesale = parsePrice(product?.price_wholesale);
+        const baseStock = parseStock(product?.stock);
 
         if (baseMl && baseMl > 0) {
             rows.push({
                 ml: baseMl,
                 price: basePrice && basePrice > 0 ? basePrice : null,
                 price_wholesale: baseWholesale && baseWholesale > 0 ? baseWholesale : null,
+                stock: baseStock,
             });
         }
 
@@ -223,15 +230,14 @@ export default function ProductDetailNuevo() {
                 opt?.wholesale_price ??
                 opt?.wholesalePrice
             );
+            const stock = parseStock(opt?.stock ?? opt?.qty ?? opt?.quantity);
             if (!ml || ml <= 0) continue;
 
             rows.push({
                 ml,
-                price: price && price > 0 ? price : (basePrice && basePrice > 0 ? basePrice : null),
-                price_wholesale:
-                    priceWholesale && priceWholesale > 0
-                        ? priceWholesale
-                        : (baseWholesale && baseWholesale > 0 ? baseWholesale : null),
+                price: price && price > 0 ? price : null,
+                price_wholesale: priceWholesale && priceWholesale > 0 ? priceWholesale : null,
+                stock,
             });
         }
 
@@ -246,8 +252,12 @@ export default function ProductDetailNuevo() {
         null;
     const displayCategoryName = getDisplayCategoryName(product);
 
-    const retailPrice = Number(selectedSize?.price ?? product?.price);
-    const wholesalePrice = Number(selectedSize?.price_wholesale ?? product?.price_wholesale);
+    const retailPrice = Number(
+        selectedSize ? selectedSize?.price : product?.price
+    );
+    const wholesalePrice = Number(
+        selectedSize ? selectedSize?.price_wholesale : product?.price_wholesale
+    );
     const finalPrice = isWholesale
         ? (wholesalePrice > 0 ? wholesalePrice : null)
         : (retailPrice > 0 ? retailPrice : null);
@@ -281,12 +291,18 @@ export default function ProductDetailNuevo() {
             const found = product.flavor_catalog.find(f => f.name === selectedFlavor);
             if (found) return found.stock;
         }
+        if (selectedSize && Number.isFinite(Number(selectedSize.stock))) {
+            return Number(selectedSize.stock);
+        }
         return product?.stock ?? 0;
     };
 
     const getAvailableStock = () => {
         const inCart = store.cart?.find(
-            i => i.id === product.id
+            i =>
+                i.id === product.id &&
+                (i.selectedFlavor || "") === (selectedFlavor || "") &&
+                String(i.selected_size_ml ?? i.volume_ml ?? "") === String(selectedSize?.ml ?? product?.volume_ml ?? "")
         );
         return getMaxStock() - (inCart?.quantity || 0);
     };
@@ -314,8 +330,9 @@ export default function ProductDetailNuevo() {
             ...product,
             volume_ml: selectedSize?.ml ?? product?.volume_ml,
             selected_size_ml: selectedSize?.ml ?? product?.volume_ml,
-            price: selectedSize?.price ?? product?.price,
-            price_wholesale: selectedSize?.price_wholesale ?? product?.price_wholesale,
+            price: selectedSize ? selectedSize?.price : product?.price,
+            price_wholesale: selectedSize ? selectedSize?.price_wholesale : product?.price_wholesale,
+            stock: selectedSize?.stock ?? product?.stock ?? 0,
         };
 
         actions?.addToCart(productForCart, quantity);

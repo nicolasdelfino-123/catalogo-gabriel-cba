@@ -1,6 +1,7 @@
 import { useState, useContext, useMemo, useEffect } from "react";
 import { Context } from "../../../js/store/appContext.jsx";
 import { useNavigate, useLocation } from "react-router-dom";
+import sinImagen from "@/assets/sin_imagen.jpg";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 
@@ -37,6 +38,11 @@ const parsePrice = (value) => {
     const normalized = String(value).replace(/\./g, "").replace(",", ".").trim();
     const n = Number(normalized);
     return Number.isFinite(n) ? n : null;
+};
+
+const parseStock = (value) => {
+    const n = Number(value);
+    return Number.isFinite(n) ? Math.max(0, Math.floor(n)) : 0;
 };
 
 const CATEGORY_ID_TO_NAME = {
@@ -85,12 +91,14 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
         const baseMl = parseMl(product?.volume_ml);
         const basePrice = parsePrice(product?.price);
         const baseWholesale = parsePrice(product?.price_wholesale);
+        const baseStock = parseStock(product?.stock);
 
         if (baseMl && baseMl > 0) {
             rows.push({
                 ml: baseMl,
                 price: basePrice && basePrice > 0 ? basePrice : null,
                 price_wholesale: baseWholesale && baseWholesale > 0 ? baseWholesale : null,
+                stock: baseStock,
             });
         }
 
@@ -142,16 +150,15 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                 opt?.wholesale_price ??
                 opt?.wholesalePrice
             );
+            const stock = parseStock(opt?.stock ?? opt?.qty ?? opt?.quantity);
 
             if (!ml || ml <= 0) continue;
 
             rows.push({
                 ml,
-                price: price && price > 0 ? price : (basePrice && basePrice > 0 ? basePrice : null),
-                price_wholesale:
-                    priceWholesale && priceWholesale > 0
-                        ? priceWholesale
-                        : (baseWholesale && baseWholesale > 0 ? baseWholesale : null),
+                price: price && price > 0 ? price : null,
+                price_wholesale: priceWholesale && priceWholesale > 0 ? priceWholesale : null,
+                stock,
             });
         }
 
@@ -173,8 +180,12 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
         sizeOptions[0] ||
         null;
 
-    const wholesalePrice = Number(selectedSize?.price_wholesale ?? product?.price_wholesale);
-    const retailPrice = Number(selectedSize?.price ?? product?.price);
+    const wholesalePrice = Number(
+        selectedSize ? selectedSize?.price_wholesale : product?.price_wholesale
+    );
+    const retailPrice = Number(
+        selectedSize ? selectedSize?.price : product?.price
+    );
 
     const finalPrice = isWholesale
         ? (wholesalePrice > 0 ? wholesalePrice : null)
@@ -182,9 +193,13 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
     const pricePrefix = isWholesale ? "US$" : "$";
     const displayCategoryName = getDisplayCategoryName(product);
 
-    const stock = Number(product?.stock ?? 0);
+    const stock = Number(selectedSize?.stock ?? product?.stock ?? 0);
     const hasStock = stock > 0;
     const hasVolume = sizeOptions.length > 0;
+
+    useEffect(() => {
+        if (quantity > Math.max(1, stock)) setQuantity(Math.max(1, stock));
+    }, [stock, quantity]);
 
     const handleAddToCart = () => {
         const hasFlavors =
@@ -205,9 +220,10 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
             ? {
                 ...product,
                 volume_ml: selectedSize.ml,
-                price: selectedSize.price ?? product.price,
-                price_wholesale: selectedSize.price_wholesale ?? product.price_wholesale,
+                price: selectedSize.price,
+                price_wholesale: selectedSize.price_wholesale,
                 selected_size_ml: selectedSize.ml,
+                stock: selectedSize.stock ?? product.stock ?? 0,
             }
             : product;
 
@@ -254,9 +270,10 @@ export default function ProductCardPerfumes({ product, returnTo, isGrid = true }
                 className="aspect-square bg-white flex items-center justify-center p-4 sm:p-6 cursor-pointer overflow-hidden"
             >
                 <img
-                    src={toAbsUrl(product?.image_url) || "/sin_imagen.jpg"}
+                    src={toAbsUrl(product?.image_url) || sinImagen}
                     alt={product?.name || "Producto"}
                     className="max-h-full object-contain hover:scale-105 transition duration-500 ease-out"
+                    onError={(e) => { e.currentTarget.src = sinImagen; }}
                 />
             </div>
 

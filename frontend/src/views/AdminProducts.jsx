@@ -342,6 +342,7 @@ const normalizeVolumeOptions = (rows = [], { keepWithoutMl = false } = {}) =>
         .map((row) => {
             const ml = Number(row?.ml);
             const price = Number(row?.price);
+            const stockRaw = Number(row?.stock);
             const priceWholesaleRaw = row?.price_wholesale;
             const priceWholesale =
                 priceWholesaleRaw === "" || priceWholesaleRaw === null || priceWholesaleRaw === undefined
@@ -351,11 +352,12 @@ const normalizeVolumeOptions = (rows = [], { keepWithoutMl = false } = {}) =>
             return {
                 ml: Number.isFinite(ml) ? Math.max(0, Math.floor(ml)) : null,
                 price: Number.isFinite(price) && price > 0 ? price : null,
+                stock: Number.isFinite(stockRaw) ? Math.max(0, Math.floor(stockRaw)) : 0,
                 price_wholesale:
                     Number.isFinite(priceWholesale) && priceWholesale > 0 ? priceWholesale : null,
             };
         })
-        .filter((row) => row.price != null && (keepWithoutMl || (row.ml != null && row.ml > 0)));
+        .filter((row) => keepWithoutMl || (row.ml != null && row.ml > 0));
 
 const sortVolumeOptions = (a, b) => {
     const aml = a?.ml ?? null;
@@ -378,6 +380,7 @@ const upsertVolumeOption = (rows = [], row) => {
 const clearPricingInputs = (state) => ({
     ...state,
     volume_ml: "",
+    volume_stock: "",
     price: "",
     price_wholesale: "",
 });
@@ -398,6 +401,7 @@ export default function AdminProducts() {
 
     const [editingStockId, setEditingStockId] = useState(null);
     const [editingStock, setEditingStock] = useState("");
+    const [selectedMlByProduct, setSelectedMlByProduct] = useState({});
 
     const [editingWholesaleId, setEditingWholesaleId] = useState(null);
     const [editingWholesale, setEditingWholesale] = useState("");
@@ -441,14 +445,14 @@ export default function AdminProducts() {
         fetchAll()
     }, [])
 
-    const startEditPrice = (p) => {
+    const startEditPrice = (p, currentPrice) => {
         setEditingPriceId(p.id);
         // mantengo como string lo que ve el usuario
-        setEditingPrice(String(p.price ?? ""));
+        setEditingPrice(String(currentPrice ?? p.price ?? ""));
     };
-    const startEditWholesale = (product) => {
+    const startEditWholesale = (product, currentWholesale) => {
         setEditingWholesaleId(product.id);
-        setEditingWholesale(product.price_wholesale ?? "");
+        setEditingWholesale(currentWholesale ?? product.price_wholesale ?? "");
     };
 
 
@@ -464,6 +468,41 @@ export default function AdminProducts() {
             alert("Precio inválido");
             return;
         }
+        const product = products.find((x) => x.id === editingPriceId);
+        if (!product) return;
+
+        const mlKey = selectedMlByProduct[editingPriceId] ?? getDefaultMlKey(product);
+        const selectedMl = mlKey === "sin_ml" ? null : Number(mlKey);
+
+        const baseOptions = normalizeVolumeOptions(product.volume_options || [], { keepWithoutMl: true });
+        let payload = { price: newPriceNum };
+        let nextProductPatch = { price: newPriceNum };
+
+        if (Number.isFinite(selectedMl) && selectedMl > 0) {
+            let found = false;
+            const nextOptions = baseOptions.map((row) => {
+                if (Number(row?.ml) === Number(selectedMl)) {
+                    found = true;
+                    return { ...row, price: newPriceNum };
+                }
+                return row;
+            });
+            if (!found) {
+                nextOptions.push({
+                    ml: Math.floor(selectedMl),
+                    price: newPriceNum,
+                    stock: Number.isFinite(Number(product.stock)) ? Number(product.stock) : 0,
+                    price_wholesale:
+                        Number.isFinite(Number(product.price_wholesale)) && Number(product.price_wholesale) > 0
+                            ? Number(product.price_wholesale)
+                            : null,
+                });
+                nextOptions.sort(sortVolumeOptions);
+            }
+            payload = { volume_options: normalizeVolumeOptions(nextOptions) };
+            nextProductPatch = { volume_options: nextOptions };
+        }
+
         try {
             const res = await fetch(`${API}/admin/products/${editingPriceId}`, {
                 method: "PUT",
@@ -471,7 +510,7 @@ export default function AdminProducts() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ price: newPriceNum }),
+                body: JSON.stringify(payload),
             });
             const data = await res.json().catch(() => ({}));
             if (!res.ok) {
@@ -479,7 +518,7 @@ export default function AdminProducts() {
                 return;
             }
             // Refrescar rápido en memoria sin romper nada más
-            setProducts((prev) => prev.map((x) => x.id === editingPriceId ? { ...x, price: newPriceNum } : x));
+            setProducts((prev) => prev.map((x) => x.id === editingPriceId ? { ...x, ...nextProductPatch } : x));
             cancelEditPrice();
         } catch (e) {
             console.error(e);
@@ -495,6 +534,40 @@ export default function AdminProducts() {
             alert("Precio mayorista inválido");
             return;
         }
+        const product = products.find((x) => x.id === editingWholesaleId);
+        if (!product) return;
+
+        const mlKey = selectedMlByProduct[editingWholesaleId] ?? getDefaultMlKey(product);
+        const selectedMl = mlKey === "sin_ml" ? null : Number(mlKey);
+
+        const baseOptions = normalizeVolumeOptions(product.volume_options || [], { keepWithoutMl: true });
+        let payload = { price_wholesale: newPrice };
+        let nextProductPatch = { price_wholesale: newPrice };
+
+        if (Number.isFinite(selectedMl) && selectedMl > 0) {
+            let found = false;
+            const nextOptions = baseOptions.map((row) => {
+                if (Number(row?.ml) === Number(selectedMl)) {
+                    found = true;
+                    return { ...row, price_wholesale: newPrice };
+                }
+                return row;
+            });
+            if (!found) {
+                nextOptions.push({
+                    ml: Math.floor(selectedMl),
+                    price:
+                        Number.isFinite(Number(product.price)) && Number(product.price) > 0
+                            ? Number(product.price)
+                            : 0,
+                    stock: Number.isFinite(Number(product.stock)) ? Number(product.stock) : 0,
+                    price_wholesale: newPrice,
+                });
+                nextOptions.sort(sortVolumeOptions);
+            }
+            payload = { volume_options: normalizeVolumeOptions(nextOptions) };
+            nextProductPatch = { volume_options: nextOptions };
+        }
 
         try {
             const res = await fetch(`${API}/admin/products/${editingWholesaleId}`, {
@@ -503,7 +576,7 @@ export default function AdminProducts() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ price_wholesale: newPrice }),
+                body: JSON.stringify(payload),
             });
 
             const data = await res.json().catch(() => ({}));
@@ -517,7 +590,7 @@ export default function AdminProducts() {
             setProducts(prev =>
                 prev.map(p =>
                     p.id === editingWholesaleId
-                        ? { ...p, price_wholesale: newPrice }
+                        ? { ...p, ...nextProductPatch }
                         : p
                 )
             );
@@ -529,9 +602,9 @@ export default function AdminProducts() {
             alert("Error actualizando precio mayorista");
         }
     };
-    const startEditStock = (p) => {
+    const startEditStock = (p, currentStock) => {
         setEditingStockId(p.id);
-        setEditingStock(String(p.stock ?? 0));
+        setEditingStock(String(currentStock ?? p.stock ?? 0));
     };
 
     const cancelEditStock = () => {
@@ -549,6 +622,39 @@ export default function AdminProducts() {
             alert("Stock inválido");
             return;
         }
+        const product = products.find((x) => x.id === editingStockId);
+        if (!product) return;
+
+        const mlKey = selectedMlByProduct[editingStockId] ?? getDefaultMlKey(product);
+        const selectedMl = mlKey === "sin_ml" ? null : Number(mlKey);
+        const baseOptions = normalizeVolumeOptions(product.volume_options || [], { keepWithoutMl: true });
+        let payload = { stock: newStock };
+        let nextProductPatch = { stock: newStock };
+
+        if (Number.isFinite(selectedMl) && selectedMl > 0) {
+            let found = false;
+            const nextOptions = baseOptions.map((row) => {
+                if (Number(row?.ml) === Number(selectedMl)) {
+                    found = true;
+                    return { ...row, stock: newStock };
+                }
+                return row;
+            });
+            if (!found) {
+                nextOptions.push({
+                    ml: Math.floor(selectedMl),
+                    price: Number.isFinite(Number(product.price)) ? Number(product.price) : 0,
+                    price_wholesale:
+                        Number.isFinite(Number(product.price_wholesale)) && Number(product.price_wholesale) > 0
+                            ? Number(product.price_wholesale)
+                            : null,
+                    stock: newStock,
+                });
+                nextOptions.sort(sortVolumeOptions);
+            }
+            payload = { volume_options: normalizeVolumeOptions(nextOptions) };
+            nextProductPatch = { volume_options: nextOptions };
+        }
 
         try {
             const res = await fetch(`${API}/admin/products/${editingStockId}`, {
@@ -557,7 +663,7 @@ export default function AdminProducts() {
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,
                 },
-                body: JSON.stringify({ stock: newStock }),
+                body: JSON.stringify(payload),
             });
 
             const data = await res.json().catch(() => ({}));
@@ -567,7 +673,7 @@ export default function AdminProducts() {
             }
 
             setProducts((prev) =>
-                prev.map((x) => (x.id === editingStockId ? { ...x, stock: newStock } : x))
+                prev.map((x) => (x.id === editingStockId ? { ...x, ...nextProductPatch } : x))
             );
 
             cancelEditStock();
@@ -702,8 +808,6 @@ export default function AdminProducts() {
             const activeFlavors = catalog.filter((x) => x.active).map((x) => x.name)
             const enabled = shouldShowFlavors(form.category_id) && activeFlavors.length > 0
 
-            // Si está activado el modo, el stock total se calcula como suma de los activos
-            const finalStock = Number(form.stock ?? 0)
             // 🔒 Sanitiza y evita valores tipo "frutal" que causarían GET /frutal
             const normalizedImageUrl = (() => {
                 const u = String(form.image_url || "").trim();
@@ -712,7 +816,7 @@ export default function AdminProducts() {
                 if (u.startsWith("/")) return normalizeImagePath(u); // relativo válido → normaliza /public
                 return "";                                     // invalida textos sueltos (evita 404 /frutal)
             })();
-            const { image_urls, ...cleanForm } = form;
+            const { image_urls, volume_stock, ...cleanForm } = form;
             const allVolumeOptions = normalizeVolumeOptions(form.volume_options || [], { keepWithoutMl: true });
             const fallbackRetail = Number(
                 allVolumeOptions.find((row) => Number(row?.price) > 0)?.price
@@ -720,6 +824,13 @@ export default function AdminProducts() {
             const fallbackWholesale = Number(
                 allVolumeOptions.find((row) => Number(row?.price_wholesale) > 0)?.price_wholesale
             );
+            const stockFromVolumes = allVolumeOptions.reduce(
+                (acc, row) => acc + (Number.isFinite(Number(row?.stock)) ? Number(row.stock) : 0),
+                0
+            );
+            const finalStock = allVolumeOptions.length > 0
+                ? stockFromVolumes
+                : Number(form.stock ?? 0);
             const directRetail = Number(form.price);
             const directWholesale = Number(form.price_wholesale);
             const payload = {
@@ -813,7 +924,11 @@ export default function AdminProducts() {
     };
 
     const continueSaveFlow = async () => {
-        const stock = Math.max(0, Math.floor(Number(form?.stock) || 0));
+        const variantStock = normalizeVolumeOptions(form?.volume_options || [], { keepWithoutMl: true })
+            .reduce((acc, row) => acc + (Number.isFinite(Number(row?.stock)) ? Number(row.stock) : 0), 0);
+        const stock = (form?.volume_options || []).length > 0
+            ? variantStock
+            : Math.max(0, Math.floor(Number(form?.stock) || 0));
         if (stock === 0) {
             setShowZeroStockModal(true);
             return;
@@ -830,6 +945,49 @@ export default function AdminProducts() {
             return;
         }
         await continueSaveFlow();
+    };
+
+    const getMlOptionsForTable = (p) => {
+        const options = normalizeVolumeOptions(p?.volume_options || [], { keepWithoutMl: true });
+        if (options.length > 0) return options.sort(sortVolumeOptions);
+
+        const fallbackMl = Number(p?.volume_ml);
+        if (Number.isFinite(fallbackMl) && fallbackMl > 0) {
+            return [{
+                ml: Math.floor(fallbackMl),
+                price: Number.isFinite(Number(p?.price)) ? Number(p.price) : 0,
+                stock: Number.isFinite(Number(p?.stock)) ? Number(p.stock) : 0,
+                price_wholesale:
+                    Number.isFinite(Number(p?.price_wholesale)) && Number(p.price_wholesale) > 0
+                        ? Number(p.price_wholesale)
+                        : null,
+            }];
+        }
+
+        return [{
+            ml: null,
+            price: Number.isFinite(Number(p?.price)) ? Number(p.price) : 0,
+            stock: Number.isFinite(Number(p?.stock)) ? Number(p.stock) : 0,
+            price_wholesale:
+                Number.isFinite(Number(p?.price_wholesale)) && Number(p.price_wholesale) > 0
+                    ? Number(p.price_wholesale)
+                    : null,
+        }];
+    };
+
+    const getDefaultMlKey = (p) => {
+        const options = getMlOptionsForTable(p);
+        const firstWithMl = options.find((x) => Number.isFinite(Number(x?.ml)) && Number(x.ml) > 0);
+        return firstWithMl ? String(Number(firstWithMl.ml)) : "sin_ml";
+    };
+
+    const getSelectedMlKey = (p) => selectedMlByProduct[p.id] ?? getDefaultMlKey(p);
+
+    const getSelectedPriceOption = (p) => {
+        const options = getMlOptionsForTable(p);
+        const key = getSelectedMlKey(p);
+        return options.find((x) => (Number.isFinite(Number(x?.ml)) && Number(x.ml) > 0 ? String(Number(x.ml)) : "sin_ml") === key)
+            || options[0];
     };
 
     const filtered = products.filter((p) => {
@@ -908,6 +1066,7 @@ export default function AdminProducts() {
                         price: "",
                         price_wholesale: "",
                         volume_ml: "",
+                        volume_stock: "",
                         volume_options: [],
                         stock: 0,
                     })}
@@ -1003,9 +1162,10 @@ export default function AdminProducts() {
                             <th className="p-2 text-left">Producto</th>
                             <th className="p-2 text-left">Descripción corta</th>
                             <th className="p-2 text-left">Descripción larga</th>
+                            <th className="p-2 text-center">ML</th>
                             <th className="p-2">Precio minorista</th>
 
-                            <th className="p-2">Mayorista</th>
+                            <th className="p-2">Precio<br /> Mayorista</th>
 
                             <th className="p-2">Stock</th>
                             <th className="p-2">Categoría</th>
@@ -1015,172 +1175,206 @@ export default function AdminProducts() {
                         </tr>
                     </thead>
                     <tbody>
-                        {filtered.map((p) => (
-                            <tr key={p.id} className="border-t">
-                                <td className="p-2">
-                                    <div>
-                                        <div className="font-medium">{p.name}</div>
-                                        {p.brand && <div className="text-gray-500 text-xs">{p.brand}</div>}
-                                    </div>
-                                </td>
-                                <td className="p-2 max-w-xs">
-                                    <div className="truncate" title={stripHtml(p.description)}>
-                                        {stripHtml(p.description) || "Sin descripción"}
-                                    </div>
-                                </td>
-                                <td className="p-2 max-w-xs">
-                                    <div className="truncate" title={stripHtml(p.short_description)}>
-                                        {stripHtml(p.short_description) || "Sin descripción breve"}
-                                    </div>
-                                </td>
-                                <td className="p-2">
-                                    {editingPriceId === p.id ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <input
-                                                className="w-24 border rounded px-2 py-1 text-right tabular-nums"
-                                                type="text"
-                                                inputMode="numeric"
-                                                autoFocus
-                                                value={Number(editingPrice || 0).toLocaleString("es-AR")}
-                                                onChange={(e) => {
-                                                    const raw = e.target.value.replace(/\./g, "").replace(/[^\d]/g, "");
-                                                    setEditingPrice(raw);
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter") confirmEditPrice();
-                                                    if (e.key === "Escape") cancelEditPrice();
-                                                }}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-green-50"
-                                                title="Guardar"
-                                                onClick={confirmEditPrice}
-                                            >
-                                                ✅
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-gray-50"
-                                                title="Cancelar"
-                                                onClick={cancelEditPrice}
-                                            >
-                                                ❌
-                                            </button>
+                        {filtered.map((p) => {
+                            const mlOptions = getMlOptionsForTable(p);
+                            const selectedOption = getSelectedPriceOption(p);
+                            const retailShown = Number.isFinite(Number(selectedOption?.price)) ? Number(selectedOption.price) : 0;
+                            const wholesaleShown =
+                                Number.isFinite(Number(selectedOption?.price_wholesale)) && Number(selectedOption.price_wholesale) > 0
+                                    ? Number(selectedOption.price_wholesale)
+                                    : null;
+                            const stockShown =
+                                Number.isFinite(Number(selectedOption?.stock))
+                                    ? Number(selectedOption.stock)
+                                    : (Number.isFinite(Number(p?.stock)) ? Number(p.stock) : 0);
+
+                            return (
+                                <tr key={p.id} className="border-t">
+                                    <td className="p-2">
+                                        <div>
+                                            <div className="font-medium">{p.name}</div>
+                                            {p.brand && <div className="text-gray-500 text-xs">{p.brand}</div>}
                                         </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <span className="tabular-nums">$ {Number(p.price).toLocaleString("es-AR")}</span>
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-gray-50"
-                                                title="Editar precio"
-                                                onClick={() => startEditPrice(p)}
-                                            >
-                                                ✏️
-                                            </button>
+                                    </td>
+                                    <td className="p-2 max-w-xs">
+                                        <div className="truncate" title={stripHtml(p.description)}>
+                                            {stripHtml(p.description) || "Sin descripción"}
                                         </div>
-                                    )}
-                                </td>
-                                <td className="p-2">
-                                    {editingWholesaleId === p.id ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <input
-                                                className="w-24 border rounded px-2 py-1 text-right tabular-nums"
-                                                type="text"
-                                                inputMode="numeric"
-                                                autoFocus
-                                                value={Number(editingWholesale || 0).toLocaleString("es-AR")}
-                                                onChange={(e) => {
-                                                    const raw = e.target.value.replace(/\./g, "").replace(/[^\d]/g, "");
-                                                    setEditingWholesale(raw);
-                                                }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter") confirmEditWholesale();
-                                                    if (e.key === "Escape") cancelEditWholesale();
-                                                }}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-green-50"
-                                                onClick={confirmEditWholesale}
-                                            >
-                                                ✅
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-gray-50"
-                                                onClick={cancelEditWholesale}
-                                            >
-                                                ❌
-                                            </button>
+                                    </td>
+                                    <td className="p-2 max-w-xs">
+                                        <div className="truncate" title={stripHtml(p.short_description)}>
+                                            {stripHtml(p.short_description) || "Sin descripción breve"}
                                         </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <span className="tabular-nums">
-                                                {p.price_wholesale ? `US$ ${Number(p.price_wholesale).toLocaleString("es-AR")}` : "—"}
-                                            </span>
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-gray-50"
-                                                onClick={() => startEditWholesale(p)}
-                                            >
-                                                ✏️
-                                            </button>
-                                        </div>
-                                    )}
-                                </td>
+                                    </td>
+                                    <td className="p-2 text-center">
+                                        <select
+                                            value={getSelectedMlKey(p)}
+                                            onChange={(e) =>
+                                                setSelectedMlByProduct((prev) => ({ ...prev, [p.id]: e.target.value }))
+                                            }
+                                            className="border rounded px-2 py-1 text-xs sm:text-sm min-w-[96px]"
+                                        >
+                                            {mlOptions.map((opt) => {
+                                                const key =
+                                                    Number.isFinite(Number(opt?.ml)) && Number(opt.ml) > 0
+                                                        ? String(Number(opt.ml))
+                                                        : "sin_ml";
+                                                return (
+                                                    <option key={`${p.id}-${key}`} value={key}>
+                                                        {key === "sin_ml" ? "Sin ML" : `${key} ML`}
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </td>
+                                    <td className="p-2">
+                                        {editingPriceId === p.id ? (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <input
+                                                    className="w-24 border rounded px-2 py-1 text-right tabular-nums"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    autoFocus
+                                                    value={Number(editingPrice || 0).toLocaleString("es-AR")}
+                                                    onChange={(e) => {
+                                                        const raw = e.target.value.replace(/\./g, "").replace(/[^\d]/g, "");
+                                                        setEditingPrice(raw);
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") confirmEditPrice();
+                                                        if (e.key === "Escape") cancelEditPrice();
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-green-50"
+                                                    title="Guardar"
+                                                    onClick={confirmEditPrice}
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-gray-50"
+                                                    title="Cancelar"
+                                                    onClick={cancelEditPrice}
+                                                >
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <span className="tabular-nums">$ {Number(retailShown).toLocaleString("es-AR")}</span>
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-gray-50"
+                                                    title="Editar precio"
+                                                    onClick={() => startEditPrice(p, retailShown)}
+                                                >
+                                                    ✏️
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
+                                    <td className="p-2">
+                                        {editingWholesaleId === p.id ? (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <input
+                                                    className="w-24 border rounded px-2 py-1 text-right tabular-nums"
+                                                    type="text"
+                                                    inputMode="numeric"
+                                                    autoFocus
+                                                    value={Number(editingWholesale || 0).toLocaleString("es-AR")}
+                                                    onChange={(e) => {
+                                                        const raw = e.target.value.replace(/\./g, "").replace(/[^\d]/g, "");
+                                                        setEditingWholesale(raw);
+                                                    }}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") confirmEditWholesale();
+                                                        if (e.key === "Escape") cancelEditWholesale();
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-green-50"
+                                                    onClick={confirmEditWholesale}
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-gray-50"
+                                                    onClick={cancelEditWholesale}
+                                                >
+                                                    ❌
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <span className="tabular-nums">
+                                                    {wholesaleShown ? `US$ ${Number(wholesaleShown).toLocaleString("es-AR")}` : "—"}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-gray-50"
+                                                    onClick={() => startEditWholesale(p, wholesaleShown)}
+                                                >
+                                                    ✏️
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
 
 
 
-                                <td className="p-2 text-center">
-                                    {editingStockId === p.id ? (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <input
-                                                className="w-20 border rounded px-2 py-1 text-right"
-                                                type="number"
-                                                min={0}
-                                                step={1}
-                                                inputMode="numeric"
-                                                autoFocus
-                                                value={editingStock}
-                                                onChange={(e) => setEditingStock(e.target.value)}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === "Enter") confirmEditStock();
-                                                    if (e.key === "Escape") cancelEditStock();
-                                                }}
-                                            />
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-green-50"
-                                                onClick={confirmEditStock}
-                                            >
-                                                ✅
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-red-50"
-                                                onClick={cancelEditStock}
-                                            >
-                                                ✖️
-                                            </button>
-                                        </div>
-                                    ) : (
-                                        <div className="flex items-center justify-center gap-2">
-                                            <span>{p.stock ?? 0}</span>
-                                            <button
-                                                type="button"
-                                                className="px-2 py-1 border rounded hover:bg-gray-50"
-                                                onClick={() => startEditStock(p)}
-                                            >
-                                                ✏️
-                                            </button>
-                                        </div>
-                                    )}
-                                </td>
+                                    <td className="p-2 text-center">
+                                        {editingStockId === p.id ? (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <input
+                                                    className="w-20 border rounded px-2 py-1 text-right"
+                                                    type="number"
+                                                    min={0}
+                                                    step={1}
+                                                    inputMode="numeric"
+                                                    autoFocus
+                                                    value={editingStock}
+                                                    onChange={(e) => setEditingStock(e.target.value)}
+                                                    onKeyDown={(e) => {
+                                                        if (e.key === "Enter") confirmEditStock();
+                                                        if (e.key === "Escape") cancelEditStock();
+                                                    }}
+                                                />
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-green-50"
+                                                    onClick={confirmEditStock}
+                                                >
+                                                    ✅
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-red-50"
+                                                    onClick={cancelEditStock}
+                                                >
+                                                    ✖️
+                                                </button>
+                                            </div>
+                                        ) : (
+                                            <div className="flex items-center justify-center gap-2">
+                                                <span>{stockShown}</span>
+                                                <button
+                                                    type="button"
+                                                    className="px-2 py-1 border rounded hover:bg-gray-50"
+                                                    onClick={() => startEditStock(p, stockShown)}
+                                                >
+                                                    ✏️
+                                                </button>
+                                            </div>
+                                        )}
+                                    </td>
 
-                                <td className="p-2 text-center">{ID_TO_CATEGORY_NAME[p.category_id]}</td>
-                                {/*  <td className="p-2 text-center">
+                                    <td className="p-2 text-center">{ID_TO_CATEGORY_NAME[p.category_id]}</td>
+                                    {/*  <td className="p-2 text-center">
                                     {p.flavor_enabled ? (
                                         <span
                                             className="text-xs bg-green-100 text-green-800 px-2 py-1 rounded"
@@ -1193,63 +1387,65 @@ export default function AdminProducts() {
                                         <span className="text-xs text-gray-500">Sin sabores</span>
                                     )}
                                 </td> */}
-                                <td className="p-2 text-center">
-                                    <span
-                                        className={`px-2 py-1 rounded text-xs ${p.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                                            }`}
-                                    >
-                                        {p.is_active ? "Activo" : "Inactivo"}
-                                    </span>
-                                </td>
-                                <td className="p-2 text-right">
-                                    <button
-                                        onClick={() => {
-                                            let catalog = Array.isArray(p.flavor_catalog) ? p.flavor_catalog : [];
-                                            if ((!catalog || catalog.length === 0) && Array.isArray(p.flavors) && p.flavors.length > 0) {
-                                                catalog = p.flavors.map((n) => ({ name: n, active: true, stock: 0 }));
-                                            }
-                                            if (!Array.isArray(catalog)) catalog = [];
+                                    <td className="p-2 text-center">
+                                        <span
+                                            className={`px-2 py-1 rounded text-xs ${p.is_active ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                                                }`}
+                                        >
+                                            {p.is_active ? "Activo" : "Inactivo"}
+                                        </span>
+                                    </td>
+                                    <td className="p-2 text-right">
+                                        <button
+                                            onClick={() => {
+                                                let catalog = Array.isArray(p.flavor_catalog) ? p.flavor_catalog : [];
+                                                if ((!catalog || catalog.length === 0) && Array.isArray(p.flavors) && p.flavors.length > 0) {
+                                                    catalog = p.flavors.map((n) => ({ name: n, active: true, stock: 0 }));
+                                                }
+                                                if (!Array.isArray(catalog)) catalog = [];
 
-                                            const flavorStockMode = Boolean(p?.flavor_stock_mode ?? false);
-                                            const sum = sumActiveFlavorStock(catalog);
+                                                const flavorStockMode = Boolean(p?.flavor_stock_mode ?? false);
+                                                const sum = sumActiveFlavorStock(catalog);
 
-                                            // si no tiene imagen cargada, queda vacío y el preview usa fallback
-                                            const safeImage = (p.image_url && String(p.image_url).trim())
-                                                ? p.image_url
-                                                : "";
-                                            let safeGallery = Array.isArray(p.image_urls) ? p.image_urls : [];
-                                            safeGallery = safeGallery.filter((u) => !isDefaultImage(u));
-                                            if (safeImage && !isDefaultImage(safeImage)) {
-                                                safeGallery = uniqPush(safeGallery, safeImage);
-                                            }
+                                                // si no tiene imagen cargada, queda vacío y el preview usa fallback
+                                                const safeImage = (p.image_url && String(p.image_url).trim())
+                                                    ? p.image_url
+                                                    : "";
+                                                let safeGallery = Array.isArray(p.image_urls) ? p.image_urls : [];
+                                                safeGallery = safeGallery.filter((u) => !isDefaultImage(u));
+                                                if (safeImage && !isDefaultImage(safeImage)) {
+                                                    safeGallery = uniqPush(safeGallery, safeImage);
+                                                }
 
-                                            setForm({
-                                                ...p,
-                                                category_id: Number(p.category_id) === 6 ? 1 : p.category_id,
-                                                price: Number(p.price) > 0 ? String(p.price) : "",
-                                                price_wholesale: p.price_wholesale ?? "", // ✅ NUEVO: trae mayorista al form
-                                                volume_ml: p.volume_ml ?? "",
-                                                volume_options: normalizeVolumeOptions(p.volume_options || [], { keepWithoutMl: true }),
-                                                image_url: safeImage,                    // 👈 default en edición
-                                                image_urls: safeGallery,
-                                                flavor_catalog: catalog,
-                                                flavor_enabled: p.flavor_enabled ?? (catalog.length > 0),
-                                                flavor_stock_mode: flavorStockMode,
-                                                stock: flavorStockMode ? sum : (Number.isFinite(Number(p.stock)) ? Number(p.stock) : 0),
-                                            });
+                                                setForm({
+                                                    ...p,
+                                                    category_id: Number(p.category_id) === 6 ? 1 : p.category_id,
+                                                    price: Number(p.price) > 0 ? String(p.price) : "",
+                                                    price_wholesale: p.price_wholesale ?? "", // ✅ NUEVO: trae mayorista al form
+                                                    volume_ml: p.volume_ml ?? "",
+                                                    volume_stock: "",
+                                                    volume_options: normalizeVolumeOptions(p.volume_options || [], { keepWithoutMl: true }),
+                                                    image_url: safeImage,                    // 👈 default en edición
+                                                    image_urls: safeGallery,
+                                                    flavor_catalog: catalog,
+                                                    flavor_enabled: p.flavor_enabled ?? (catalog.length > 0),
+                                                    flavor_stock_mode: flavorStockMode,
+                                                    stock: flavorStockMode ? sum : (Number.isFinite(Number(p.stock)) ? Number(p.stock) : 0),
+                                                });
 
-                                        }}
-                                        className="px-3 py-1 border rounded hover:bg-gray-50"
-                                    >
-                                        Editar
-                                    </button>
+                                            }}
+                                            className="px-3 py-1 border rounded hover:bg-gray-50"
+                                        >
+                                            Editar
+                                        </button>
 
 
 
 
-                                </td>
-                            </tr>
-                        ))}
+                                    </td>
+                                </tr>
+                            )
+                        })}
                     </tbody>
                 </table>
             </div>
@@ -1323,6 +1519,32 @@ export default function AdminProducts() {
                                     }}
                                 />
                             </div>
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Stock (ml)</label>
+                                <input
+                                    className="w-full border rounded px-3 py-2"
+                                    placeholder="Ej: 20"
+                                    type="number"
+                                    min={0}
+                                    step={1}
+                                    inputMode="numeric"
+                                    {...noSpin}
+                                    value={
+                                        form.volume_stock === "" ||
+                                            form.volume_stock === null ||
+                                            form.volume_stock === undefined
+                                            ? ""
+                                            : form.volume_stock
+                                    }
+                                    onChange={(e) => {
+                                        const v = e.target.value;
+                                        setForm((prev) => ({
+                                            ...prev,
+                                            volume_stock: v === "" ? "" : Math.max(0, Math.floor(Number(v))),
+                                        }));
+                                    }}
+                                />
+                            </div>
                             <button
                                 type="button"
                                 className="h-10 px-3 rounded bg-green-600 text-white hover:bg-green-700 transition-colors"
@@ -1330,14 +1552,11 @@ export default function AdminProducts() {
                                     const ml = Number(form.volume_ml);
                                     const price = Number(form.price);
                                     const priceWholesale = Number(form.price_wholesale);
-
-                                    if (!Number.isFinite(price) || price <= 0) {
-                                        alert("Ingresá precio minorista válido para agregar");
-                                        return;
-                                    }
+                                    const stock = Math.max(0, Math.floor(Number(form.volume_stock) || 0));
                                     const row = {
                                         ml: Number.isFinite(ml) && ml > 0 ? Math.floor(ml) : null,
-                                        price,
+                                        price: Number.isFinite(price) && price > 0 ? price : null,
+                                        stock,
                                         price_wholesale:
                                             Number.isFinite(priceWholesale) && priceWholesale > 0
                                                 ? priceWholesale
@@ -1405,7 +1624,7 @@ export default function AdminProducts() {
                                     </span>
 
                                     <input
-                                        className="w-full border rounded pl-10 pr-3 py-2"
+                                        className="w-full border rounded pl-12 pr-3 py-2"
                                         placeholder="Opcional"
                                         type="text"
                                         inputMode="numeric"
@@ -1431,10 +1650,11 @@ export default function AdminProducts() {
                                 {(form.volume_options || []).map((row, idx) => (
                                     <div key={`${row.ml}-${idx}`} className="flex items-center justify-between text-sm border rounded px-3 py-2">
                                         <span>
-                                            {row.ml != null ? `${row.ml} ml` : "Sin ml"} · ${Number(row.price).toLocaleString("es-AR")}
+                                            {row.ml != null ? `${row.ml} ml` : "Sin ml"} · {Number(row.price) > 0 ? `$${Number(row.price).toLocaleString("es-AR")}` : "Consultar"}
                                             {Number(row.price_wholesale) > 0
                                                 ? ` · Mayorista $${Number(row.price_wholesale).toLocaleString("es-AR")}`
                                                 : ""}
+                                            {` · Stock ${Number.isFinite(Number(row.stock)) ? Number(row.stock) : 0}`}
                                         </span>
                                         <div className="flex items-center gap-2">
                                             <button
@@ -1446,6 +1666,7 @@ export default function AdminProducts() {
                                                     setForm((prev) => ({
                                                         ...prev,
                                                         volume_ml: row.ml ?? "",
+                                                        volume_stock: Number.isFinite(Number(row?.stock)) ? String(row.stock) : "",
                                                         price: Number(row?.price) > 0 ? String(row.price) : "",
                                                         price_wholesale:
                                                             Number(row?.price_wholesale) > 0 ? String(row.price_wholesale) : "",

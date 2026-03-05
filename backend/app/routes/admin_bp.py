@@ -105,10 +105,19 @@ def _normalize_volume_options(rows):
             except Exception:
                 price_wholesale = None
 
+        stock = 0
+        raw_stock = row.get('stock')
+        if raw_stock not in ("", None):
+            try:
+                stock = max(0, int(float(raw_stock)))
+            except Exception:
+                stock = 0
+
         normalized.append({
             'ml': ml,
             'price': price,
             'price_wholesale': price_wholesale,
+            'stock': stock,
         })
 
     # evita duplicados por ml (último valor gana)
@@ -116,6 +125,9 @@ def _normalize_volume_options(rows):
     for item in normalized:
         by_ml[item['ml']] = item
     return [by_ml[k] for k in sorted(by_ml.keys())]
+
+def _sum_volume_stock(rows):
+    return sum(max(0, int(x.get('stock', 0) or 0)) for x in (rows or []))
 
 # Middleware para verificar que el usuario sea admin
 def admin_required():
@@ -155,15 +167,6 @@ def create_product():
         flavor_enabled = bool(data.get('flavor_enabled', False))
         active_flavors = [f['name'] for f in catalog if f.get('active')] if catalog else (data.get('flavors') or [])
 
-        # stock total coherente
-        if flavor_stock_mode:
-            computed_stock = _sum_active_stock(catalog)
-        else:
-            try:
-                computed_stock = int(data.get('stock', 0))
-            except Exception:
-                computed_stock = 0
-
         volume_ml = None
         if data.get('volume_ml') not in ("", None):
             try:
@@ -171,6 +174,17 @@ def create_product():
             except Exception:
                 volume_ml = None
         volume_options = _normalize_volume_options(data.get('volume_options'))
+
+        # stock total coherente
+        if flavor_stock_mode:
+            computed_stock = _sum_active_stock(catalog)
+        elif len(volume_options) > 0:
+            computed_stock = _sum_volume_stock(volume_options)
+        else:
+            try:
+                computed_stock = int(data.get('stock', 0))
+            except Exception:
+                computed_stock = 0
 
         safe_category = _ensure_category_exists(int(data['category_id']))
 
@@ -255,8 +269,10 @@ def update_product(product_id):
                 product.volume_ml = None if raw in ("", None) else max(0, int(float(raw)))
             except Exception:
                 product.volume_ml = None
+        volume_options_updated = False
         if 'volume_options' in data:
             product.volume_options = _normalize_volume_options(data.get('volume_options'))
+            volume_options_updated = True
 
 
         # ===== NUEVO: catálogo y modo =====
@@ -284,6 +300,8 @@ def update_product(product_id):
                     product.stock = int(data['stock'])
                 except Exception:
                     product.stock = 0
+            elif volume_options_updated:
+                product.stock = _sum_volume_stock(product.volume_options or [])
         else:
             # sin cambios de catálogo: respetar 'stock' si vino
             if 'stock' in data:
@@ -291,6 +309,8 @@ def update_product(product_id):
                     product.stock = int(data['stock'])
                 except Exception:
                     product.stock = 0
+            elif volume_options_updated and not product.flavor_stock_mode:
+                product.stock = _sum_volume_stock(product.volume_options or [])
         product.created_at = now_cba_naive()
         db.session.commit()
         return jsonify({'message': 'Producto actualizado exitosamente', 'product': product.serialize()}), 200
