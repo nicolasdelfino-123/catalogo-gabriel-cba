@@ -4,6 +4,7 @@ import { Context } from "../js/store/appContext.jsx";
 import ProductCardPerfumes from "../components/ui/cards/ProductCardPerfumes.jsx";
 import HomeContact from "../components/home/HomeContact.jsx";
 import banner from "../assets/banner_arabe.jpg";
+import Asesoria from "../components/Asesoria.jsx";
 
 export default function InicioNuevo() {
     const { store, actions } = useContext(Context);
@@ -52,7 +53,7 @@ export default function InicioNuevo() {
                 />
 
                 {/* Overlay oscuro elegante */}
-                <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/80" />
+                <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/50 to-black/70" />
 
                 {/* Contenido */}
                 <div className="relative z-10 px-6 max-w-3xl">
@@ -96,13 +97,9 @@ export default function InicioNuevo() {
                     </div>
                 )}
             </section>
-            <HomeContact
-                address={ADDRESS}
-                hours={HOURS}
-                igUrl={IG_URL}
-                waUrl={WA_URL}
-                mapEmbed={MAP_EMBED}
-            />
+            <Asesoria />
+
+
 
         </div>
     );
