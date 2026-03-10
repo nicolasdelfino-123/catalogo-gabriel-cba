@@ -1795,7 +1795,7 @@ export default function AdminProducts() {
 )}
 */}
                         {/* Stock general: solo visible si NO usamos stock por sabor */}
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                        {/*  <label className="block text-sm font-medium text-gray-700 mb-1">
                             Stock
                         </label>
 
@@ -1812,7 +1812,7 @@ export default function AdminProducts() {
                                 setForm({ ...form, stock: n })
                             }}
                             required
-                        />
+                        /> */}
 
                         <label className="block text-sm font-medium text-gray-700 mb-1">Imagen del producto</label>
 

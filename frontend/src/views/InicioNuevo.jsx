@@ -41,6 +41,18 @@ export default function InicioNuevo() {
         // opcional: limpiar para que no te re-scrollee en futuras entradas
         sessionStorage.removeItem("lastProductId");
     }, []);
+
+
+
+    useEffect(() => {
+        if (location.state?.scrollTo === "contacto") {
+            const el = document.getElementById("asesoria");
+            if (!el) return;
+            const headerH = document.querySelector("header")?.offsetHeight || 80;
+            const y = el.getBoundingClientRect().top + window.pageYOffset - headerH - 8;
+            window.scrollTo({ top: y, behavior: "smooth" });
+        }
+    }, [location.state]);
     return (
         <div className="min-h-screen bg-gray-50">
 
@@ -105,7 +117,7 @@ export default function InicioNuevo() {
             </section>
             <div className="flex justify-center mt-0 mb-12 lg:px-12 lg:py-12">
                 <div
-                    onClick={() => navigate("/products")}
+                    onClick={() => navigate(location.pathname.startsWith("/mayorista") ? "/mayorista/products" : "/products")}
                     className="
 cursor-pointer
 px-8 py-3
