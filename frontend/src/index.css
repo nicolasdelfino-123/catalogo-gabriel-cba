@@ -231,3 +231,46 @@ button:not(header button):not(.text-white):not(.bg-transparent) {
   forced-color-adjust: none !important;
   /* evita inversión de colores en Android */
 }
+
+@media screen and (max-width: 768px) {
+  .sidebar-price-range {
+    background-color: transparent !important;
+    -webkit-appearance: none !important;
+    appearance: none !important;
+  }
+
+  .sidebar-price-range::-webkit-slider-runnable-track {
+    height: 4px !important;
+    background: #9ca3af !important;
+    border: 0 !important;
+  }
+
+  .sidebar-price-range::-moz-range-track {
+    height: 4px !important;
+    background: #9ca3af !important;
+    border: 0 !important;
+  }
+
+  .sidebar-price-range::-webkit-slider-thumb {
+    -webkit-appearance: none !important;
+    appearance: none !important;
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 9999px !important;
+    background: #111111 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    pointer-events: auto !important;
+    margin-top: -6px !important;
+  }
+
+  .sidebar-price-range::-moz-range-thumb {
+    width: 16px !important;
+    height: 16px !important;
+    border-radius: 9999px !important;
+    background: #111111 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    pointer-events: auto !important;
+  }
+}

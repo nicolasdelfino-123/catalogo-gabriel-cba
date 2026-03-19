@@ -267,7 +267,7 @@ export default function SidebarFiltersNuevo({
                     </button>
                 </div>
 
-                <div className="relative h-6 mt-2">
+                <div className="relative h-6 mt-4">
                     <input
                         type="range"
                         min={priceMin}
@@ -275,8 +275,8 @@ export default function SidebarFiltersNuevo({
                         step={100}
                         value={p.min}
                         onChange={(e) => setMin(e.target.value)}
-                        className="absolute w-full appearance-none h-1 bg-gray-200 rounded pointer-events-none"
-                        style={{ zIndex: 3 }}
+                        className="sidebar-price-range absolute w-full appearance-none h-1 bg-gray-200 rounded pointer-events-none"
+                        style={{ zIndex: 5, accentColor: "#111111", backgroundColor: "#030e1fff" }}
                     />
                     <input
                         type="range"
@@ -285,8 +285,8 @@ export default function SidebarFiltersNuevo({
                         step={100}
                         value={p.max}
                         onChange={(e) => setMax(e.target.value)}
-                        className="absolute w-full appearance-none h-1 bg-gray-200 rounded"
-                        style={{ zIndex: 4 }}
+                        className="sidebar-price-range absolute w-full appearance-none h-1 bg-gray-200 rounded"
+                        style={{ zIndex: 4, accentColor: "#111111", backgroundColor: "#041329ff" }}
                     />
                 </div>
             </div>
