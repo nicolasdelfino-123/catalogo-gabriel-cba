@@ -1531,22 +1531,19 @@ export default function AdminProducts() {
                                                 setForm({
                                                     ...p,
                                                     category_id: Number(p.category_id) === 6 ? 1 : p.category_id,
-                                                    price: Number(p.price) > 0 ? String(p.price) : "",
-                                                    price_wholesale:
-                                                        p.price_wholesale == null || p.price_wholesale === ""
-                                                            ? ""
-                                                            : formatPrice(p.price_wholesale),
-                                                    // ✅ NUEVO: trae mayorista al form
-                                                    volume_ml: p.volume_ml ?? "",
+                                                    price: "",
+                                                    price_wholesale: "",
+                                                    volume_ml: "",
                                                     volume_stock: "",
                                                     volume_options: normalizeVolumeOptions(p.volume_options || [], { keepWithoutMl: true }),
-                                                    image_url: safeImage,                    // 👈 default en edición
+                                                    image_url: safeImage,
                                                     image_urls: safeGallery,
                                                     flavor_catalog: catalog,
                                                     flavor_enabled: p.flavor_enabled ?? (catalog.length > 0),
                                                     flavor_stock_mode: flavorStockMode,
                                                     stock: flavorStockMode ? sum : (Number.isFinite(Number(p.stock)) ? Number(p.stock) : 0),
                                                 });
+
 
                                             }}
                                             className="px-3 py-1 border rounded hover:bg-gray-50"
