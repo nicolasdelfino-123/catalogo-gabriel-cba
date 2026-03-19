@@ -48,22 +48,22 @@ const parseStock = (value) => {
 };
 
 const CATEGORY_ID_TO_NAME = {
-    1: "Perfumes Masculinos",
+    1: "Masculinos",
     2: "Femeninos",
     3: "Unisex",
     4: "Cremas",
     5: "Body Splash Victoria Secret",
     // compatibilidad de productos viejos
-    6: "Perfumes Masculinos",
+    6: "Masculinos",
 };
 
 const LEGACY_CATEGORY_NAME_TO_CURRENT = {
-    "Vapes Desechables": "Perfumes masculinos",
+    "Vapes Desechables": "Masculinos",
     "Pods Recargables": "Femeninos",
     "Líquidos": "Unisex",
     "Resistencias": "Cremas",
     "Celulares": "Body Splash Victoria Secret",
-    "Perfumes": "Perfumes masculinos",
+    "Perfumes": "Masculinos",
 };
 
 const getDisplayCategoryName = (product) => {

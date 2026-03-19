@@ -6,7 +6,7 @@ import { withWholesale } from "../utils/navigation.js";
 
 
 const CATEGORIES = [
-    { id: 1, name: "Perfumes Masculinos", slug: "perfumes-masculinos" },
+    { id: 1, name: "Masculinos", slug: "perfumes-masculinos" },
     { id: 2, name: "Femeninos", slug: "femeninos" },
     { id: 3, name: "Unisex", slug: "unisex" },
     { id: 4, name: "Cremas", slug: "cremas" },

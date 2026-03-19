@@ -4,7 +4,7 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { withWholesale } from "../../../utils/wholesaleMode"; // ✅ ruta correcta desde /components/product
 
 const CATEGORIES = [
-    { id: 1, name: "Perfumes Masculinos", slug: "perfumes-masculinos" },
+    { id: 1, name: "Masculinos", slug: "perfumes-masculinos" },
     { id: 2, name: "Femeninos", slug: "femeninos" },
     { id: 3, name: "Unisex", slug: "unisex" },
     { id: 4, name: "Cremas", slug: "cremas" },

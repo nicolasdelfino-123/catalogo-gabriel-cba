@@ -11,7 +11,7 @@ const link = `https://wa.me/${phone}?text=${message}`;
 
 // En tu Footer.jsx — mini mapa label/slug para no volverte loco
 const FOOTER_CATEGORIES = [
-    { label: "Perfumes Masculinos", slug: "perfumes-masculinos" },
+    { label: "Masculinos", slug: "perfumes-masculinos" },
     { label: "Femeninos", slug: "femeninos" },
     { label: "Unisex", slug: "unisex" },
     { label: "Cremas", slug: "cremas" },

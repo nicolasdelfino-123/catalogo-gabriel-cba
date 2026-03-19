@@ -9,6 +9,7 @@ import { formatPrice } from "../utils/price.js";
 // ----- Helpers de categorías -----
 // ----- Helpers de categorías -----
 const CATEGORY_NAME_TO_ID = {
+    "Masculinos": 1,
     "Perfumes Masculinos": 1,
     "Femeninos": 2,
     "Unisex": 3,
@@ -20,6 +21,8 @@ const ID_TO_CATEGORY_NAME = Object.fromEntries(
 );
 // compatibilidad para productos viejos en categoría 6
 ID_TO_CATEGORY_NAME[6] = "Perfumes Masculinos";
+ID_TO_CATEGORY_NAME[1] = "Masculinos";
+ID_TO_CATEGORY_NAME[6] = "Masculinos";
 
 const normalizeCategoryLabel = (value = "") =>
     String(value || "")
@@ -389,7 +392,7 @@ const clearPricingInputs = (state) => ({
 // ----- Componente principal -----
 export default function AdminProducts() {
     const [products, setProducts] = useState([])
-    const [categories] = useState(["Perfumes Masculinos", "Femeninos", "Unisex", "Cremas", "Body Splash Victoria Secret"])
+    const [categories] = useState(["Masculinos", "Femeninos", "Unisex", "Cremas", "Body Splash Victoria Secret"])
     const [form, setForm] = useState(null)
     const [q, setQ] = useState("")
     const [selectedCategory, setSelectedCategory] = useState("Todos")
@@ -1206,7 +1209,7 @@ export default function AdminProducts() {
                                         stock: it.stock || 0,
                                         image_url: it.image_url || "",
                                         category_id: catId,
-                                        category_name: ID_TO_CATEGORY_NAME[catId] || "Perfumes Masculinos",
+                                        category_name: ID_TO_CATEGORY_NAME[catId] || "Masculinos",
                                         flavor_enabled: catalog.length > 0,
                                         flavor_catalog: catalog, // ✅ catálogo completo para edición
                                         flavors: catalog.map((x) => x.name), // ✅ todos los sabores como activos por defecto
@@ -2036,7 +2039,7 @@ export default function AdminProducts() {
                                 setForm({
                                     ...form,
                                     category_id: categoryId,
-                                    category_name: ID_TO_CATEGORY_NAME[categoryId] || "Perfumes Masculinos",
+                                    category_name: ID_TO_CATEGORY_NAME[categoryId] || "Masculinos",
                                     flavor_enabled: show,
                                     flavors: show ? form.flavors || [] : [],
                                 })
@@ -2044,7 +2047,7 @@ export default function AdminProducts() {
                             required
                         >
                             <option value="">Selecciona categoría</option>
-                            <option value={1}>Perfumes Masculinos</option>
+                            <option value={1}>Masculinos</option>
                             <option value={2}>Femeninos</option>
                             <option value={3}>Unisex</option>
                             <option value={4}>Cremas</option>

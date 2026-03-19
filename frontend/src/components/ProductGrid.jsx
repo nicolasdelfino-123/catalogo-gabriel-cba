@@ -25,18 +25,18 @@ const writeGridState = (key, state) => {
 };
 
 const SLUG_TO_NAME = {
-  "perfumes-masculinos": "Perfumes Masculinos",
+  "perfumes-masculinos": "Masculinos",
   "femeninos": "Femeninos",
   "unisex": "Unisex",
   "cremas": "Cremas",
   "body-splash-victoria-secret": "Body splash victoria secret",
   // compatibilidad URLs viejas
-  "vapes-desechables": "Perfumes masculinos",
+  "vapes-desechables": "Masculinos",
   "pods-recargables": "Femeninos",
   "liquidos": "Unisex",
   "resistencias": "Cremas",
   "celulares": "Body splash victoria secret",
-  "perfumes": "Perfumes masculinos",
+  "perfumes": "Masculinos",
 };
 
 const SLUG_TO_ID = {

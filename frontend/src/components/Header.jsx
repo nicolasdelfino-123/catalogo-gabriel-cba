@@ -238,7 +238,7 @@ export default function Header() {
 
   // Categorías para el dropdown (coinciden con las del backend)
   const productCategories = [
-    { name: "Perfumes Masculinos", route: "/categoria/perfumes-masculinos", icon: "🕴️" },
+    { name: "Masculinos", route: "/categoria/perfumes-masculinos", icon: "🕴️" },
     { name: "Femeninos", route: "/categoria/femeninos", icon: "💃" },
     { name: "Unisex", route: "/categoria/unisex", icon: "✨" },
     { name: "Cremas", route: "/categoria/cremas", icon: "🧴" },

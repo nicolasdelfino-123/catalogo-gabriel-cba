@@ -43,7 +43,9 @@ const getFlavors = (product) => {
 
 // Mapa nombre de categoría -> slug (coincide con ProductGrid)
 const NAME_TO_SLUG = {
+    "Masculinos": "perfumes-masculinos",
     "Perfumes masculinos": "perfumes-masculinos",
+    "Perfumes Masculinos": "perfumes-masculinos",
     "Femeninos": "femeninos",
     "Unisex": "unisex",
     "Cremas": "cremas",

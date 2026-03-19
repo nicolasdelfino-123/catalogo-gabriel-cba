@@ -37,18 +37,18 @@ const writeGridState = (key, state) => {
 // Mapeos de categorías
 // -----------------------------
 const SLUG_TO_NAME = {
-    "perfumes-masculinos": "Perfumes Masculinos",
+    "perfumes-masculinos": "Masculinos",
     "femeninos": "Femeninos",
     "unisex": "Unisex",
     "cremas": "Cremas",
     "body-splash-victoria-secret": "Body Splash Victoria Secret",
     // compatibilidad URLs viejas
-    "vapes-desechables": "Perfumes masculinos",
+    "vapes-desechables": "Masculinos",
     "pods-recargables": "Femeninos",
     "liquidos": "Unisex",
     "resistencias": "Cremas",
     "celulares": "Body splash victoria secret",
-    "perfumes": "Perfumes Masculinos",
+    "perfumes": "Masculinos",
 };
 
 const SLUG_TO_ID = {

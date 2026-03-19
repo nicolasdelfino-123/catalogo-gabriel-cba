@@ -4,7 +4,7 @@ import { withWholesale } from "../utils/navigation.js";
 
 
 const FOOTER_CATEGORIES = [
-    { label: "Perfumes Masculinos", slug: "perfumes-masculinos" },
+    { label: "Masculinos", slug: "perfumes-masculinos" },
     { label: "Femeninos", slug: "femeninos" },
     { label: "Unisex", slug: "unisex" },
     { label: "Cremas", slug: "cremas" },
