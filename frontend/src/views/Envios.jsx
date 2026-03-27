@@ -22,7 +22,7 @@ export default function Envios() {
                 <div className="space-y-5 text-gray-700 leading-relaxed font-serif tracking-wide text-base md:text-[16px]">
 
                     <p>
-                        En <strong>Shatha Perfumes</strong> trabajamos para que cada pedido
+                        En <strong>Tu tienda Perfumes</strong> trabajamos para que cada pedido
                         llegue a destino de forma segura y en el menor tiempo posible.
                         Todos los envíos se preparan cuidadosamente para proteger los
                         productos durante el traslado.

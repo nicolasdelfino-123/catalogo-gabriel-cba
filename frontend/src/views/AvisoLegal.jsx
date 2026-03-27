@@ -22,7 +22,7 @@ export default function AvisoLegal() {
                 <div className="space-y-5 text-gray-700 leading-relaxed font-serif tracking-wide text-base md:text-[16px]">
 
                     <p>
-                        En <strong>Shatha Perfumes</strong> valoramos la confianza de nuestros clientes y
+                        En <strong>Tu tienda Perfumes</strong> valoramos la confianza de nuestros clientes y
                         respetamos la privacidad de quienes visitan nuestro sitio web. Este documento
                         describe cómo recopilamos, utilizamos y protegemos la información proporcionada
                         a través de nuestra plataforma digital.
@@ -36,7 +36,7 @@ export default function AvisoLegal() {
                         </h2>
 
                         <p>
-                            El presente sitio web pertenece a <strong>Shatha Perfumes</strong>, tienda
+                            El presente sitio web pertenece a <strong>Tu tienda Perfumes</strong>, tienda
                             dedicada a la comercialización de fragancias y productos de perfumería.
                         </p>
 
@@ -138,7 +138,7 @@ export default function AvisoLegal() {
                         </h2>
 
                         <p>
-                            Shatha Perfumes se reserva el derecho de actualizar o modificar este aviso legal
+                            Tu tienda Perfumes se reserva el derecho de actualizar o modificar este aviso legal
                             y las políticas de privacidad en cualquier momento con el objetivo de mantener
                             la información actualizada conforme a la legislación vigente.
                         </p>

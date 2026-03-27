@@ -22,7 +22,7 @@ export default function Devoluciones() {
                 <div className="space-y-5 text-gray-700 leading-relaxed font-serif tracking-wide text-base md:text-[16px]">
 
                     <p>
-                        En <strong>Shatha Perfumes</strong> trabajamos con fragancias y productos
+                        En <strong>Tu tienda Perfumes</strong> trabajamos con fragancias y productos
                         de perfumería cuidadosamente seleccionados. Nuestro objetivo es que
                         cada cliente tenga una experiencia de compra clara, segura y satisfactoria.
                     </p>
