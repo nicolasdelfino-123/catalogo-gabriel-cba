@@ -22,7 +22,7 @@ export default function Envios() {
                 <div className="space-y-5 text-gray-700 leading-relaxed font-serif tracking-wide text-base md:text-[16px]">
 
                     <p>
-                        En <strong>Tu tienda Perfumes</strong> trabajamos para que cada pedido
+                        En <strong>Attar Perfumes</strong> trabajamos para que cada pedido
                         llegue a destino de forma segura y en el menor tiempo posible.
                         Todos los envíos se preparan cuidadosamente para proteger los
                         productos durante el traslado.
@@ -130,7 +130,15 @@ export default function Envios() {
                         </p>
 
                         <p className="font-medium">
-                            contacto: <strong>xxxx@xxxx.com</strong>
+                            Contacto:{" "}
+                            <a
+                                href="https://wa.me/5493512479800"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-bold hover:text-amber-400"
+                            >
+                                +54 9 351 247-9800
+                            </a>
                         </p>
                     </section>
 

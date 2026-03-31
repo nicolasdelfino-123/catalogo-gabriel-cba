@@ -22,7 +22,7 @@ export default function AvisoLegal() {
                 <div className="space-y-5 text-gray-700 leading-relaxed font-serif tracking-wide text-base md:text-[16px]">
 
                     <p>
-                        En <strong>Tu tienda Perfumes</strong> valoramos la confianza de nuestros clientes y
+                        En <strong>Attar Perfumes</strong> valoramos la confianza de nuestros clientes y
                         respetamos la privacidad de quienes visitan nuestro sitio web. Este documento
                         describe cómo recopilamos, utilizamos y protegemos la información proporcionada
                         a través de nuestra plataforma digital.
@@ -36,7 +36,7 @@ export default function AvisoLegal() {
                         </h2>
 
                         <p>
-                            El presente sitio web pertenece a <strong>Tu tienda Perfumes</strong>, tienda
+                            El presente sitio web pertenece a <strong>Attar Perfumes</strong>, tienda
                             dedicada a la comercialización de fragancias y productos de perfumería.
                         </p>
 
@@ -46,7 +46,15 @@ export default function AvisoLegal() {
                         </p>
 
                         <p className="font-medium">
-                            contacto: <strong>xxxx@xxxx.com</strong>
+                            Contacto:{" "}
+                            <a
+                                href="https://wa.me/5493512479800"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-bold hover:text-amber-400"
+                            >
+                                +54 9 351 247-9800
+                            </a>
                         </p>
                     </section>
 
@@ -89,11 +97,19 @@ export default function AvisoLegal() {
 
                         <p>
                             El usuario podrá solicitar en cualquier momento el acceso, rectificación o
-                            eliminación de sus datos personales enviando un correo a:
+                            eliminación de sus datos personales enviando un mensaje a:
                         </p>
 
                         <p className="font-medium">
-                            <strong>xxxx@xxxx.com</strong>
+                            Contacto:{" "}
+                            <a
+                                href="https://wa.me/5493512479800"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-bold hover:text-amber-400"
+                            >
+                                +54 9 351 247-9800
+                            </a>
                         </p>
                     </section>
 
@@ -138,7 +154,7 @@ export default function AvisoLegal() {
                         </h2>
 
                         <p>
-                            Tu tienda Perfumes se reserva el derecho de actualizar o modificar este aviso legal
+                            <strong>Attar Perfumes</strong> se reserva el derecho de actualizar o modificar este aviso legal
                             y las políticas de privacidad en cualquier momento con el objetivo de mantener
                             la información actualizada conforme a la legislación vigente.
                         </p>

@@ -22,7 +22,7 @@ export default function Devoluciones() {
                 <div className="space-y-5 text-gray-700 leading-relaxed font-serif tracking-wide text-base md:text-[16px]">
 
                     <p>
-                        En <strong>Tu tienda Perfumes</strong> trabajamos con fragancias y productos
+                        En <strong>Attar Perfumes</strong> trabajamos con fragancias y productos
                         de perfumería cuidadosamente seleccionados. Nuestro objetivo es que
                         cada cliente tenga una experiencia de compra clara, segura y satisfactoria.
                     </p>
@@ -101,11 +101,11 @@ export default function Devoluciones() {
                         </p>
 
                         <p>
-                            Puede comunicarse a través del correo electrónico:
+                            Puede comunicarse a través del WhatsApp:
                         </p>
 
                         <p className="font-medium">
-                            contacto: <strong>xxxx@xxxx.com</strong>
+                            contacto: <strong>+54 9 351 247-9800</strong>
                         </p>
                     </section>
 
