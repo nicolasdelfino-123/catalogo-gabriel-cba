@@ -162,7 +162,7 @@ export default function AvisoLegal() {
 
                     <hr className="border-gray-200" />
 
-                    <section>
+                    {/*  <section>
                         <h2 className="text-xl font-serif font-semibold tracking-wide text-gray-900 mb-2">
                             7. Legislación aplicable
                         </h2>
@@ -172,7 +172,7 @@ export default function AvisoLegal() {
                             Cualquier controversia derivada del uso del sitio será resuelta por los tribunales
                             competentes del país.
                         </p>
-                    </section>
+                    </section> */}
 
                     <p className="text-sm text-gray-500 italic pt-6">
                         Última actualización:{" "}
