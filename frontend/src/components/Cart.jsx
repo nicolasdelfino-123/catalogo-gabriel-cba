@@ -49,7 +49,7 @@ export default function Cart({ isOpen: controlledOpen, onClose: controlledOnClos
   const navigate = useNavigate();
   const location = useLocation();
   const isWholesale = location.pathname.startsWith("/mayorista");
-  const pricePrefix = isWholesale ? "US$" : "$";
+  const pricePrefix = isWholesale ? "$" : "$";
 
 
   const isRouteMode = controlledOpen === undefined && controlledOnClose === undefined;

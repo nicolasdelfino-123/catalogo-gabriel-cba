@@ -68,13 +68,13 @@ const buildBudgetMessage = ({
     const lines = items.map((item) => {
         const price = Number(prices[item.id] ?? 0);
         const mlSuffix = item.mlLabel ? ` ${item.mlLabel}` : "";
-        const currency = priceMode === PRICE_MODE_WHOLESALE ? "US$" : "$";
+        const currency = priceMode === PRICE_MODE_WHOLESALE ? "$" : "$";
         const totalLine = price > 0 ? ` - ${currency} ${formatPrice(price)}` : " - Consultar";
         return `- ${item.quantity}x ${item.name}${mlSuffix}${totalLine}`;
     });
 
     const total = items.reduce((acc, item) => acc + (Number(prices[item.id] ?? 0) * Number(item.quantity || 0)), 0);
-    const currency = priceMode === PRICE_MODE_WHOLESALE ? "US$" : "$";
+    const currency = priceMode === PRICE_MODE_WHOLESALE ? "$" : "$";
 
     return [
         greeting,
@@ -417,7 +417,7 @@ export default function AdminBudgetModal({
                         {budgetItems.map((item) => {
                             const priceValue = Number(prices[item.id] ?? 0);
                             const isEditing = editingId === item.id;
-                            const currency = priceMode === PRICE_MODE_WHOLESALE ? "US$" : "$";
+                            const currency = priceMode === PRICE_MODE_WHOLESALE ? "$" : "$";
 
                             return (
                                 <div
@@ -537,7 +537,7 @@ export default function AdminBudgetModal({
                         <div>
                             <div className="text-sm text-stone-500">Total estimado</div>
                             <div className="text-lg font-semibold text-stone-900 md:inline-flex md:items-center md:gap-1 md:whitespace-nowrap">
-                                {priceMode === PRICE_MODE_WHOLESALE ? "US$" : "$"} {formatPrice(total)}
+                                {priceMode === PRICE_MODE_WHOLESALE ? "$" : "$"} {formatPrice(total)}
                             </div>
                         </div>
 
