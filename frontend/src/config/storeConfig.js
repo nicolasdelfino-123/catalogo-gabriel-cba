@@ -1,5 +1,5 @@
 export const storeConfig = {
-    storeName: "Attar Perfumes",
+    storeName: "Danna Perfumes",
 
     branding: {
         heroTitle: "Amor y felicidad en botellitas pequeñas",
