@@ -242,9 +242,10 @@ export default function Header() {
     1: "🖤",
     2: "🌸",
     3: "✨",
-    // 4: "🧴",
-    // 5: "🌸",
-    // 7: "🏷️",
+    4: "🕌",
+    5: "💎",
+    6: "🧪",
+    7: "👑",
   };
   const productCategories = PERFUME_CATEGORY_DEFINITIONS.map((category) => ({
     name: category.name,

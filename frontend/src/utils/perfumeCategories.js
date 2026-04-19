@@ -1,6 +1,11 @@
 export const PERFUME_CATEGORY_DEFINITIONS = [
     { id: 1, name: "Masculinos", slug: "masculinos" },
     { id: 2, name: "Femeninos", slug: "femeninos" },
+    { id: 3, name: "Unisex", slug: "unisex" },
+    { id: 4, name: "Perfumes Árabes", slug: "perfumes-arabes" },
+    { id: 5, name: "Perfumes Miniatura", slug: "perfumes-miniatura" },
+    { id: 6, name: "Decants", slug: "decants" },
+    { id: 7, name: "Accesorios", slug: "accesorios" },
 ];
 
 export const PERFUME_CATEGORY_NAMES = PERFUME_CATEGORY_DEFINITIONS.map((category) => category.name);
@@ -8,11 +13,11 @@ export const PERFUME_CATEGORY_NAMES = PERFUME_CATEGORY_DEFINITIONS.map((category
 export const CATEGORY_ID_TO_NAME = {
     1: "Masculinos",
     2: "Femeninos",
-    3: "Femeninos",
-    4: "Masculinos",
-    5: "Femeninos",
-    6: "Masculinos",
-    7: "Masculinos",
+    3: "Unisex",
+    4: "Perfumes Árabes",
+    5: "Perfumes Miniatura",
+    6: "Decants",
+    7: "Accesorios",
 };
 
 export const CATEGORY_NAME_TO_ID = {
@@ -29,11 +34,15 @@ export const CATEGORY_NAME_TO_ID = {
     "Fragancias de Mujer": 2,
     "Pods Recargables": 2,
     "Productos Karseell": 2,
-    Unisex: 2,
     "Líquidos": 2,
     Celulares: 2,
     "Body splash victoria secret": 2,
     "Body Splash Victoria Secret": 2,
+    Unisex: 3,
+    "Perfumes Árabes": 4,
+    "Perfumes Miniatura": 5,
+    Decants: 6,
+    Accesorios: 7,
 };
 
 export const LEGACY_CATEGORY_NAME_TO_CURRENT = {
@@ -56,13 +65,17 @@ export const LEGACY_CATEGORY_NAME_TO_CURRENT = {
 export const SLUG_TO_NAME = {
     masculinos: "Masculinos",
     femeninos: "Femeninos",
+    unisex: "Unisex",
+    "perfumes-arabes": "Perfumes Árabes",
+    "perfumes-miniatura": "Perfumes Miniatura",
+    decants: "Decants",
+    accesorios: "Accesorios",
     "perfumes-masculinos": "Masculinos",
     perfumes: "Masculinos",
     "vapes-desechables": "Masculinos",
     resistencias: "Masculinos",
     "perfumes-de-disenador": "Masculinos",
     "pods-recargables": "Femeninos",
-    unisex: "Femeninos",
     liquidos: "Femeninos",
     celulares: "Femeninos",
     "body-splash-victoria-secret": "Femeninos",
@@ -71,13 +84,17 @@ export const SLUG_TO_NAME = {
 export const SLUG_TO_ID = {
     masculinos: 1,
     femeninos: 2,
+    unisex: 3,
+    "perfumes-arabes": 4,
+    "perfumes-miniatura": 5,
+    decants: 6,
+    accesorios: 7,
     "perfumes-masculinos": 1,
     perfumes: 1,
     "vapes-desechables": 1,
     resistencias: 1,
     "perfumes-de-disenador": 1,
     "pods-recargables": 2,
-    unisex: 2,
     liquidos: 2,
     celulares: 2,
     "body-splash-victoria-secret": 2,
@@ -97,11 +114,15 @@ export const NAME_TO_SLUG = {
     "Fragancias de Mujer": "femeninos",
     "Pods Recargables": "femeninos",
     "Productos Karseell": "femeninos",
-    Unisex: "femeninos",
     "Líquidos": "femeninos",
     Celulares: "femeninos",
     "Body splash victoria secret": "femeninos",
     "Body Splash Victoria Secret": "femeninos",
+    Unisex: "unisex",
+    "Perfumes Árabes": "perfumes-arabes",
+    "Perfumes Miniatura": "perfumes-miniatura",
+    Decants: "decants",
+    Accesorios: "accesorios",
 };
 
 export const mapCategoryIdFromName = (value = "") => {

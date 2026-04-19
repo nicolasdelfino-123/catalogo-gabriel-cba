@@ -3,6 +3,7 @@ import { Context } from '../js/store/appContext.jsx';
 import { Link } from "react-router-dom";
 import ProductCard from '../components/ProductCard.jsx';
 import { useLocation } from "react-router-dom";
+import { PERFUME_CATEGORY_DEFINITIONS } from '../utils/perfumeCategories.js';
 import heroBg from '@/assets/hero-final-1.png'
 import banner1 from '@/assets/banner-1.png'
 import perfumes from '@/assets/perfumes.png'
@@ -244,52 +245,32 @@ function Inicio() {
             <section className="py-6 md:py-10 fade-in-section" id="categorias-animadas">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* GRID GENERAL */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6 lg:max-w-4xl lg:mx-auto">
-                        <Link
-                            to={isWholesale ? "/mayorista/categoria/masculinos" : "/categoria/masculinos"}
-                            className="group relative block rounded-xl overflow-hidden shadow-md h-28 sm:h-32 md:h-40 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            aria-label="Ir a Masculinos"
-                        >
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-200 group-hover:scale-[1.02] rounded-xl"
-                                style={{ backgroundImage: `url(${perfumes})` }}
-                                aria-hidden
-                            />
-                            <div className="absolute inset-0 bg-black/35 rounded-xl" aria-hidden />
-                            <div className="relative h-full flex items-end">
-                                <div className="px-5 py-5">
-                                    <h3 className="text-white text-2xl font-extrabold uppercase leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">
-                                        Masculinos
-                                    </h3>
-                                    <span className="inline-block mt-3 bg-yellow-300 text-black font-extrabold text-sm px-3 py-1 rounded">
-                                        VER
-                                    </span>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+                        {PERFUME_CATEGORY_DEFINITIONS.map((category) => (
+                            <Link
+                                key={category.slug}
+                                to={isWholesale ? `/mayorista/categoria/${category.slug}` : `/categoria/${category.slug}`}
+                                className="group relative block rounded-xl overflow-hidden shadow-md h-28 sm:h-32 md:h-40 focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                aria-label={`Ir a ${category.name}`}
+                            >
+                                <div
+                                    className="absolute inset-0 bg-cover bg-center transition-transform duration-200 group-hover:scale-[1.02] rounded-xl"
+                                    style={{ backgroundImage: `url(${perfumes})` }}
+                                    aria-hidden
+                                />
+                                <div className="absolute inset-0 bg-black/35 rounded-xl" aria-hidden />
+                                <div className="relative h-full flex items-end">
+                                    <div className="px-5 py-5">
+                                        <h3 className="text-white text-2xl font-extrabold uppercase leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">
+                                            {category.name}
+                                        </h3>
+                                        <span className="inline-block mt-3 bg-yellow-300 text-black font-extrabold text-sm px-3 py-1 rounded">
+                                            VER
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                        </Link>
-
-                        <Link
-                            to={isWholesale ? "/mayorista/categoria/femeninos" : "/categoria/femeninos"}
-                            className="group relative block rounded-xl overflow-hidden shadow-md h-28 sm:h-32 md:h-40 focus:outline-none focus:ring-2 focus:ring-purple-500"
-                            aria-label="Ir a Femeninos"
-                        >
-                            <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-200 group-hover:scale-[1.02] rounded-xl"
-                                style={{ backgroundImage: `url(${perfumes})` }}
-                                aria-hidden
-                            />
-                            <div className="absolute inset-0 bg-black/20 rounded-xl" aria-hidden />
-                            <div className="relative h-full flex items-end">
-                                <div className="px-5 py-5">
-                                    <h3 className="text-white text-2xl font-extrabold uppercase leading-tight drop-shadow-[0_2px_2px_rgba(0,0,0,0.25)]">
-                                        Femeninos
-                                    </h3>
-                                    <span className="inline-block mt-3 bg-yellow-300 text-black font-extrabold text-sm px-3 py-1 rounded">
-                                        VER
-                                    </span>
-                                </div>
-                            </div>
-                        </Link>
+                            </Link>
+                        ))}
                     </div>
                 </div>
             </section>
