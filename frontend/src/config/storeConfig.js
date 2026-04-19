@@ -2,8 +2,8 @@ export const storeConfig = {
     storeName: " Estilo Fenix Perfumes",
 
     branding: {
-        heroTitle: "Perfumes Árabes Originales en Argentina",
-        heroSubtitle: "Elegí cómo querés que te recuerden",
+        heroTitle: "Fragancias Árabes Exclusivas",
+        heroSubtitle: "Aromas intensos · Calidad premium · Precios accesibles",
         /*       footerText: "Perfumes árabes originales en Argentina.", */
     },
 
@@ -32,7 +32,7 @@ export const storeConfig = {
     },
 
     media: {
-        heroImage: "f4.jpeg",
+        heroImage: "f3_si.png",
         footerLogo: "logo_danna.jpeg",
     },
 

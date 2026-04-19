@@ -97,47 +97,93 @@ export default function InicioNuevo() {
 
 
             {/* HERO PREMIUM CON IMAGEN IMPORTADA */}
-            <section className="relative h-[400px] sm:h-[420px] md:h-[75vh]  flex items-center justify-center text-center overflow-hidden bg-[#0B0608]">
+            <section className="
+relative
+
+h-[380px]        /* MOBILE */
+sm:h-[550px]     /* TABLET */
+md:h-[650px]     /* LAPTOP */
+lg:h-[700px]     /* DESKTOP */
+
+flex items-center justify-center text-center overflow-hidden bg-[#0B0608]
+">
 
                 {/* Fondo con tu imagen */}
                 <div
-                    className="
-  absolute inset-0
-  bg-no-repeat
+                    className={`
+    absolute inset-0
+    bg-no-repeat
 
-  /* ================= MOBILE ================= */
+    /* ============================================
+       📱 MOBILE (base, < 640px)
+       ============================================ */
+    bg-[length:400px_230px]     
+    bg-[position:center_1px]     
 
-  bg-[length:100%_auto]      /* ZOOM MOBILE (100% = normal, 120% = zoom, 90% = más chica) */
-  bg-[center_top_1px]      /* POSICION VERTICAL MOBILE (- sube, + baja) */
+    /* ============================================
+       📱 SMALL TABLET (sm: ≥ 640px)
+       ============================================ */
+    sm:bg-[length:1400px_auto]    /* ↔ Ancho imagen small tablet */
+    sm:bg-[position:center_50px] 
 
-  /* ================= DESKTOP ================= */
+    /* ============================================
+       💻 TABLET / LAPTOP (md: ≥ 768px)
+       ============================================ */
+    md:bg-[length:1600px_auto]    /* ↔ Ancho imagen tablet/laptop */
+    md:bg-[position:center_-150px]/* ↕ Posición vertical tablet/laptop */
 
-sm:bg-[length:100%_auto]   /* tamaño imagen */
-sm:bg-center              /* centrado horizontal */
-lg:bg-[center_top_-650px]
-ipad:bg-[center_top_-270px]
- /* mover vertical */
+    /* ============================================
+       🖥 DESKTOP (lg: ≥ 1024px)
+       ============================================ */
+    lg:bg-[length:2000px_auto]    /* ↔ Ancho imagen desktop */
+    lg:bg-[position:center_-250px]/* ↕ Posición vertical desktop */
 
-  /* ================= EFECTOS ================= */
+    /* ============================================
+       🖥 DESKTOP XL (xl: ≥ 1280px)
+       ============================================ */
+    xl:bg-[length:1200px_auto]    /* ↔ Ancho imagen desktop xl */
+    xl:bg-[position:center_-300px]/* ↕ Posición vertical desktop xl */
 
-  animate-zoomSlow
-  brightness-110
-  saturate-110
-  "
+    /* ============================================
+       🖥 DESKTOP 2XL (2xl: ≥ 1536px)
+       ============================================ */
+    2xl:bg-[length:1550px_auto]   /* ↔ Ancho imagen 2xl */
+    2xl:bg-[position:center_-85px]
+
+    /* ============================================
+       ✨ EFECTOS (no tocar salvo que quieras cambiar el look)
+       ============================================ */
+    animate-zoomSlow
+    brightness-110
+    saturate-110
+  `}
                     style={{ backgroundImage: `url(${banner})` }}
                 />
 
                 {/* Overlay oscuro elegante */}
 
-                <div className="absolute inset-0 bg-gradient-to-b from-black/25 via-black/0 to-black/40" />
+                <div className="
+absolute bottom-0 left-0 w-full
+
+h-[0px]        /* MOBILE (control real) */
+sm:h-[80px]
+md:h-[60%]       /* DESKTOP lo dejás como estaba */
+
+bg-gradient-to-t
+from-black/60
+via-black/30
+to-transparent
+
+z-10
+" />
 
                 {/* Contenido */}
                 <div className="
 relative z-10 px-6 max-w-3xl
 
-mt-[290px]        /* MOBILE mover bloque */
+mt-[230px]        /* MOBILE mover bloque */
 sm:mt-[180px]
-md:mt-[350px]
+md:mt-[440px]
 ipad:mt-[720px]     /* DESKTOP mover bloque */
 ">
 
