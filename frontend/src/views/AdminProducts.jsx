@@ -1797,7 +1797,7 @@ export default function AdminProducts() {
 
                                                     setForm({
                                                         ...p,
-                                                        category_id: Number(p.category_id) === 6 ? 1 : p.category_id,
+                                                        category_id: p.category_id,
                                                         price: "",
                                                         price_wholesale: "",
                                                         volume_ml: "",
