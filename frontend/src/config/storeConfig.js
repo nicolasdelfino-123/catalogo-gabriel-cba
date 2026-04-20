@@ -14,12 +14,12 @@ export const storeConfig = {
     },
 
     contact: {
-        whatsapp: "5493534793366",
+        whatsapp: "5493517918536",
         whatsappMessage: "Hola, quiero consultar por un perfume del catálogo",
-        whatsappDisplay: "+56 9 6407 7278",
+        whatsappDisplay: "+54 9 351 8536",
 
-        instagram: "https://www.instagram.com/danna_decants_puq/",
-        instagramDisplay: "@danna_decants_puq",
+        instagram: "https://www.instagram.com/estilofenix33/",
+        instagramDisplay: "@estilofenix33",
 
         email: "nicolasdelfino585@gmail.com",
         /*  emailDisplay: "nicolasdelfino585@gmail.com", */

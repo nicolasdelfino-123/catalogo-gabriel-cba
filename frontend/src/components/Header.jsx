@@ -9,7 +9,7 @@ import zarpados from '@/assets/zarpados-22.png'
 import { withWholesale } from "../utils/navigation.js";
 import { formatPrice } from "../utils/price.js";
 import { Search, ShoppingCart } from "lucide-react";
-import shatha from '@/assets/logo_attar_prueba.png'
+import shatha from '@/assets/f2_si_.png'
 import { PERFUME_CATEGORY_DEFINITIONS } from "../utils/perfumeCategories.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
@@ -339,7 +339,17 @@ export default function Header() {
                 <img
                   src={shatha}
                   alt="Shatha"
-                  className="mt-[-0px] md:mt-[-0px] h-[55px] md:h-[55px] object-contain transition-all duration-300"
+                  className="
+    mt-[0px] md:mt-[0px]
+
+    h-[90px]        /* 🔹 MOBILE: altura de la imagen (tocá este valor) */
+    md:h-[95px]     /* 🔹 DESKTOP: altura de la imagen (tocá este valor) */
+
+    w-auto          /* 🔹 Mantiene proporción automática (NO tocar si no sabés) */
+
+    object-contain
+    transition-all duration-300
+  "
                 />
               </Link>
             </div>
@@ -453,13 +463,13 @@ export default function Header() {
             >
               Mayoristas
             </Link> */}
-              <a
+              {/*  <a
                 href={withWholesale("/inicio") + "#asesoria"}
                 onClick={goToContact}
                 className="text-gray-300 hover:text-amber-300 transition-all duration-300"
               >
                 Contacto
-              </a>
+              </a> */}
             </nav>
 
             {/* Desktop Actions */}
