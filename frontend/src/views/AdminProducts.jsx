@@ -11,7 +11,7 @@ import {
     getDisplayCategoryName,
     mapCategoryIdFromName,
     PERFUME_CATEGORY_DEFINITIONS,
-    PERFUME_CATEGORY_NAMES,
+    PERFUME_CATEGORY_DEFINITIONS_VISIBLE,
 } from "../utils/perfumeCategories.js";
 
 
@@ -410,7 +410,7 @@ const clearPricingInputs = (state) => ({
 // ----- Componente principal -----
 export default function AdminProducts() {
     const [products, setProducts] = useState([])
-    const categories = PERFUME_CATEGORY_NAMES
+    const categories = PERFUME_CATEGORY_DEFINITIONS_VISIBLE.map((category) => category.name)
     const [form, setForm] = useState(null)
     const [q, setQ] = useState("")
     const [selectedCategory, setSelectedCategory] = useState("Todos")
@@ -2507,7 +2507,7 @@ export default function AdminProducts() {
                             required
                         >
                             <option value="">Selecciona categoría</option>
-                            {PERFUME_CATEGORY_DEFINITIONS.map((category) => (
+                            {PERFUME_CATEGORY_DEFINITIONS.filter(c => ![1, 2, 3].includes(c.id)).map((category) => (
                                 <option key={category.id} value={category.id}>
                                     {category.name}
                                 </option>

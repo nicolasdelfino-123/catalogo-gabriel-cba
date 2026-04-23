@@ -2,7 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Context } from '../js/store/appContext.jsx';
 import { Link } from "react-router-dom";
 import ProductGrid from '../components/ProductGrid.jsx';
-import { PERFUME_CATEGORY_DEFINITIONS } from '../utils/perfumeCategories.js';
+import { PERFUME_CATEGORY_DEFINITIONS_VISIBLE } from '../utils/perfumeCategories.js';
 import heroBg from '@/assets/hero-bg.png'
 import perfumes from '@/assets/perfumes.png'
 
@@ -109,7 +109,7 @@ function Home() {
           <section className="py-6 md:py-10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                {PERFUME_CATEGORY_DEFINITIONS.map((category) => (
+                {PERFUME_CATEGORY_DEFINITIONS_VISIBLE.map((category) => (
                   <div key={category.slug} className="group relative rounded-xl overflow-hidden shadow-md h-28 sm:h-32 md:h-36">
                     <div
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-200 group-hover:scale-[1.02]"

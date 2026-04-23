@@ -8,6 +8,11 @@ export const PERFUME_CATEGORY_DEFINITIONS = [
     { id: 7, name: "Accesorios", slug: "accesorios" },
 ];
 
+// 🔒 Mantener definiciones completas para compatibilidad con backend/BD
+// Solo mostrar estas categorías en la UI (sin Masculinos, Femeninos, Unisex)
+export const PERFUME_CATEGORY_DEFINITIONS_VISIBLE = PERFUME_CATEGORY_DEFINITIONS.filter(
+    (cat) => ![1, 2, 3].includes(cat.id) // Excluir IDs 1, 2, 3
+);
 export const PERFUME_CATEGORY_NAMES = PERFUME_CATEGORY_DEFINITIONS.map((category) => category.name);
 
 export const CATEGORY_ID_TO_NAME = {

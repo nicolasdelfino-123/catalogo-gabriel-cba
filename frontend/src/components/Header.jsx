@@ -10,7 +10,7 @@ import { withWholesale } from "../utils/navigation.js";
 import { formatPrice } from "../utils/price.js";
 import { Search, ShoppingCart } from "lucide-react";
 import shatha from '@/assets/f2_si_.png'
-import { PERFUME_CATEGORY_DEFINITIONS } from "../utils/perfumeCategories.js";
+import { PERFUME_CATEGORY_DEFINITIONS, PERFUME_CATEGORY_DEFINITIONS_VISIBLE } from "../utils/perfumeCategories.js";
 
 const API = import.meta.env.VITE_BACKEND_URL?.replace(/\/+$/, "") || "";
 
@@ -247,7 +247,7 @@ export default function Header() {
     6: "🧪",
     7: "👑",
   };
-  const productCategories = PERFUME_CATEGORY_DEFINITIONS.map((category) => ({
+  const productCategories = PERFUME_CATEGORY_DEFINITIONS_VISIBLE.map((category) => ({
     name: category.name,
     route: `/categoria/${category.slug}`,
     icon: categoryIcons[category.id] || "•",

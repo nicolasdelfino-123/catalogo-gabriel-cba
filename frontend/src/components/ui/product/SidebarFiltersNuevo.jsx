@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 import { Menu, X } from "lucide-react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { withWholesale } from "../../../utils/wholesaleMode"; // ✅ ruta correcta desde /components/product
-import { PERFUME_CATEGORY_DEFINITIONS as CATEGORIES } from "../../../utils/perfumeCategories.js";
+import { PERFUME_CATEGORY_DEFINITIONS_VISIBLE as CATEGORIES } from "../../../utils/perfumeCategories.js";
 
 export default function SidebarFiltersNuevo({
     currentCategorySlug,

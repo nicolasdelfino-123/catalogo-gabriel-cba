@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { withWholesale } from "../utils/navigation.js";
-import { PERFUME_CATEGORY_DEFINITIONS as FOOTER_CATEGORIES } from "../utils/perfumeCategories.js";
+import { PERFUME_CATEGORY_DEFINITIONS_VISIBLE as FOOTER_CATEGORIES } from "../utils/perfumeCategories.js";
 
 export default function AvisoLegal() {
 

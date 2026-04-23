@@ -3,7 +3,7 @@ import { Context } from '../js/store/appContext.jsx';
 import { Link } from "react-router-dom";
 import ProductCard from '../components/ProductCard.jsx';
 import { useLocation } from "react-router-dom";
-import { PERFUME_CATEGORY_DEFINITIONS } from '../utils/perfumeCategories.js';
+import { PERFUME_CATEGORY_DEFINITIONS_VISIBLE } from '../utils/perfumeCategories.js';
 import heroBg from '@/assets/hero-final-1.png'
 import banner1 from '@/assets/banner-1.png'
 import perfumes from '@/assets/perfumes.png'
@@ -246,7 +246,7 @@ function Inicio() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     {/* GRID GENERAL */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
-                        {PERFUME_CATEGORY_DEFINITIONS.map((category) => (
+                        {PERFUME_CATEGORY_DEFINITIONS_VISIBLE.map((category) => (
                             <Link
                                 key={category.slug}
                                 to={isWholesale ? `/mayorista/categoria/${category.slug}` : `/categoria/${category.slug}`}

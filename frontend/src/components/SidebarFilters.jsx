@@ -2,7 +2,7 @@ import { useState, useMemo } from "react"
 import { Menu, X } from "lucide-react"
 import { useNavigate } from "react-router-dom";
 import { withWholesale } from "../utils/navigation.js";
-import { PERFUME_CATEGORY_DEFINITIONS as CATEGORIES } from "../utils/perfumeCategories.js";
+import { PERFUME_CATEGORY_DEFINITIONS_VISIBLE as CATEGORIES } from "../utils/perfumeCategories.js";
 
 
 // normalizador simple (lowercase + sin tildes + colapsa espacios)
